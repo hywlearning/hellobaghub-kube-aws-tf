@@ -1,0 +1,38 @@
+
+#ingress blue green
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: hbg-ingress-host
+  namespace: hbg-app
+  annotations:
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/certificate-arn: arn:aws:acm:ap-southeast-1:442426886856:certificate/31360561-e38e-4324-a7f2-0ca09d6bdf7b
+    alb.ingress.kubernetes.io/ssl-policy: ELBSecurityPolicy-2016-08
+    alb.ingress.kubernetes.io/load-balancer-name: hbg-app-alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: instance
+    alb.ingress.kubernetes.io/tags: developer=hellobaghub,env=prod
+spec:
+  ingressClassName: alb
+  rules: 
+    - host: "www.hellobaghub.it.com"
+      http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: app-svc-blue
+              port:
+                number: 80
+        - pathType: Prefix
+          path: "/green"
+          backend:
+            service:
+              name: app-svc-green
+              port:
+                number: 80
+                
+
+
